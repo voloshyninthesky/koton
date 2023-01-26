@@ -26,6 +26,7 @@ build/
 !**/test/**/build
 *.iml
 !**/testData/**/*.iml
+.gradle
 .idea
 .idea/remote-targets.xml
 .idea/libraries/Gradle*.xml
