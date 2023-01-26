@@ -1,1 +1,1 @@
-web: java --enable-preview -jar build/libs/koton.jar
+web: java -jar build/libs/koton.jar
