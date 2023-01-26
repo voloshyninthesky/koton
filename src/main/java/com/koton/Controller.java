@@ -17,13 +17,14 @@ import java.util.stream.Collectors;
 
 public class Controller {
 	private static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-	private static final TonApi tonApi = new TonApi();
 	public static final String collection = getCollectionAddress();
 
 	private final UpdateReceiver updateReceiver;
+	private final TonApi tonApi;
 
 	public Controller(UpdateReceiver updateReceiver) {
 		this.updateReceiver = updateReceiver;
+		this.tonApi = new TonApi();
 	}
 
 	public void getTonKeeperLink(Context ctx, boolean lock) {
@@ -35,8 +36,7 @@ public class Controller {
 				return;
 			}
 			int coins = amount == null ? 50000000 : Integer.parseInt(amount);
-			TonClient tonUtils = TonClient.INSTANCE;
-			String encoded = tonUtils.bouildTonkeeperLink(address, lock, coins);
+			String encoded = TonClient.INSTANCE.bouildTonkeeperLink(address, lock, coins);
 			String res = "{\n" +
 					"  \"tonkeeperLink\": \"" + encoded + "\"\n" +
 					"}";
