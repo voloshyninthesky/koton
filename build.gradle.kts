@@ -30,7 +30,6 @@ dependencies {
     testImplementation(kotlin("test"))
 	implementation("org.ton:ton-kotlin:0.2.4")
 	implementation("io.javalin:javalin:4.6.4")
-	implementation("tanukisoft:wrapper:3.2.3")
 	implementation("org.slf4j:slf4j-simple:2.0.5")
 	implementation("com.fasterxml.jackson.core:jackson-databind:2.13.3")
 	implementation("org.apache.commons:commons-lang3:3.12.0")
