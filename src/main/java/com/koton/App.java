@@ -9,11 +9,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class App  {
 	private static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-	private static Javalin javalin;
-	private static UpdateReceiver updateReceiver;
-
 	public static void main(String[] args) {
-		updateReceiver = new UpdateReceiver(null, new ConcurrentHashMap<>());
+		UpdateReceiver updateReceiver = new UpdateReceiver(new ConcurrentHashMap<>());
 		Controller controller = new Controller(updateReceiver);
 		int port;
 		try {
@@ -22,11 +19,11 @@ public class App  {
 			log.warn("Failed to PORT env variable, setting to 8099");
 			port = 8099;
 		}
-		javalin = Javalin.create()
+		Javalin javalin = Javalin.create()
 				.get("/getTonkeeperLink/lock", ctx -> controller.getTonKeeperLink(ctx, true))
 				.get("/getTonkeeperLink/unlock", ctx -> controller.getTonKeeperLink(ctx, false))
-				.get("/getBoc/lock", ctx-> controller.getBoc(ctx, true))
-				.get("/getBoc/unlock", ctx-> controller.getBoc(ctx, false))
+				.get("/getBoc/lock", ctx -> controller.getBoc(ctx, true))
+				.get("/getBoc/unlock", ctx -> controller.getBoc(ctx, false))
 				.get("/getLockedItems", controller::getLockedNftList)
 				.start(port);
 

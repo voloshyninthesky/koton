@@ -63,7 +63,7 @@ public class Controller {
 				ctx.json(res);
 				return;
 			}
-			NftItems items = tonApi.getNftListFromCollection(address, collection, 2222, 0);
+			NftItems items = tonApi.getNftsFromCollection(address, collection, 2222, 0);
 			log.info("Found {} nft items from collection {}", items.nft_items.size(), collection);
 			List<NftItem> lockedNfts = items.nft_items.parallelStream()
 					.filter(nftItem -> updateReceiver.nftLockState.containsKey(nftItem.userFriendlyAddress()))

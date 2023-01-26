@@ -18,19 +18,19 @@ import java.util.function.Supplier;
 
 public class UpdateReceiver {
 	private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-	private static final TonApi tonApi = new TonApi();
-	private static final TonClient tonUtils = TonClient.INSTANCE;
 	private static final int waitUntilExistsMillis = 6200;
-	public final Map<String, Boolean> nftLockState;
-	private TonNodeBlockIdExt lastCheckedBlock;
 	private final ExecutorService initExecutor = Executors.newFixedThreadPool(500);
 	private final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
 	private static final String collectionAddr = Controller.getCollectionAddress();
+	public final Map<String, Boolean> nftLockState;
+	private final TonApi tonApi;
 	public boolean ready = false;
+	private TonNodeBlockIdExt lastCheckedBlock = null;
 
-	public UpdateReceiver(TonNodeBlockIdExt lastBlock, Map<String, Boolean> nftLockState) {
-		this.lastCheckedBlock = lastBlock;
+
+	public UpdateReceiver(Map<String, Boolean> nftLockState) {
 		this.nftLockState = nftLockState;
+		this.tonApi = new TonApi();
 	}
 
 	public void start() {
@@ -42,21 +42,21 @@ public class UpdateReceiver {
 
 	public void init() {
 		logger.info("Initializing nft locked map");
-		TonNodeBlockIdExt lastBlock = tonUtils.getLastBlock();
+		TonNodeBlockIdExt lastBlock = TonClient.INSTANCE.getLastBlock();
 		while (!lastBlock.isValid()) {
 			logger.info("Waiting until last block {} is ready", lastBlock.getSeqno());
-			lastBlock = tonUtils.getLastBlock();
+			lastBlock = TonClient.INSTANCE.getLastBlock();
 		}
 		logger.info("Last block = {}", lastBlock.getSeqno());
 		TonNodeBlockIdExt finalLastBlock = lastBlock;
 		lastCheckedBlock = lastBlock;
-		int index = tonUtils.getCollectionDataNextItemIndex(collectionAddr, lastBlock);
+		int index = TonClient.INSTANCE.getCollectionDataNextItemIndex(collectionAddr, lastBlock);
 		for (int i = 0; i < index; i++) {
 			int finalI = i;
 			initExecutor.execute(() -> {
-				AddrStd address = (AddrStd) tonUtils.getNftFromCollection(collectionAddr, finalI, finalLastBlock);
+				AddrStd address = (AddrStd) TonClient.INSTANCE.getNftFromCollection(collectionAddr, finalI, finalLastBlock);
 				String nftAddr = address.toString(true, true, false, true);
-				boolean isLocked = tonUtils.checkLockStatus(nftAddr, finalLastBlock);
+				boolean isLocked = TonClient.INSTANCE.checkLockStatus(nftAddr, finalLastBlock);
 				logger.info("Initializing nft {} with locked {}", nftAddr, isLocked);
 				nftLockState.put(nftAddr, isLocked);
 			});

@@ -1,5 +1,6 @@
 package com.koton
 
+import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.decodeFromString
@@ -29,7 +30,7 @@ object TonClient {
 			URL("https://ton.org/global-config.json").readText()
 		)
 		log.info("Initializing lite client")
-		liteClient = LiteClient(GlobalScope.coroutineContext, config)
+		liteClient = LiteClient(CoroutineName("tonClient"), config)
 	}
 
 

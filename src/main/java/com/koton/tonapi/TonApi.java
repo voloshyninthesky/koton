@@ -2,8 +2,6 @@ package com.koton.tonapi;
 
 import com.koton.tonapi.Block.BlockState;
 import com.koton.tonapi.Block.LastBlock.LastBlock;
-import com.koton.tonapi.GetMethod.GetMethodRequest;
-import com.koton.tonapi.GetMethod.GetMethodResult;
 import com.koton.tonapi.Nft.NftItems;
 import com.koton.tonapi.Transaction.TransactionDetails;
 import io.javalin.plugin.json.JavalinJackson;
@@ -18,8 +16,6 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
-import java.util.Collections;
-import java.util.List;
 
 public class TonApi {
 	private static final Logger log = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -80,7 +76,7 @@ public class TonApi {
 		}
 	}
 
-	public NftItems getNftListFromCollection(String account, String collection, int limit, int offset) {
+	public NftItems getNftsFromCollection(String account, String collection, int limit, int offset) {
 		try {
 			HttpRequest get = get(tonApiEndpoint+"/nft/searchItems" +
 					"?owner=" + account +
@@ -99,29 +95,6 @@ public class TonApi {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
-	}
-	public GetMethodResult runGetMethod(String account, String method, List<Object> stack) {
-		try {
-			GetMethodRequest request = new GetMethodRequest();
-			request.address = account;
-			request.method = method;
-			request.stack = stack;
-			HttpRequest post = post(tonCenterV2Endpoint + "/runGetMethod?api_key="+toncenterApiKey, javalinJackson.toJsonString(request));
-			HttpResponse<String> response = httpClient.send(post, HttpResponse.BodyHandlers.ofString());
-			if (response.statusCode() != 200) {
-				throw new RuntimeException("Failed to execute get method . Status code: " + response.statusCode()+ " " + response.body());
-			}
-			return javalinJackson.fromJsonString(response.body(), GetMethodResult.class);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	public boolean isNftLocked(String address) {
-		GetMethodResult lockedNftResult = runGetMethod(address, "get_lock_status", Collections.emptyList());
-		String adminLock = (String)lockedNftResult.result.stack.get(0).get(1);
-		String userLock = (String)lockedNftResult.result.stack.get(1).get(1);
-		return Integer.decode(adminLock) == 1 || Integer.decode(userLock) == 1;
 	}
 
 	private HttpRequest get(String url) throws URISyntaxException {
@@ -142,13 +115,5 @@ public class TonApi {
 					.GET()
 					.build();
 		}
-	}
-
-
-	private HttpRequest post(String url, String body) throws URISyntaxException {
-		return HttpRequest.newBuilder()
-				.uri(new URI(url))
-				.POST(HttpRequest.BodyPublishers.ofString(body))
-				.build();
 	}
 }
