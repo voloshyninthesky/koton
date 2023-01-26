@@ -31,17 +31,14 @@ public class UpdateReceiver {
 	public UpdateReceiver(TonNodeBlockIdExt lastBlock, Map<String, Boolean> nftLockState) {
 		this.lastCheckedBlock = lastBlock;
 		this.nftLockState = nftLockState;
-    }
+	}
 
-    public void start() {
+	public void start() {
 		init();
 		ready = true;
-        Supplier<ScheduledFuture> supplier = () -> executorService.scheduleWithFixedDelay(this::checkNewBlocksAndUpdateState,
-            0,
-            2,
-            TimeUnit.SECONDS);
-        supplier.get();
-    }
+		Supplier<ScheduledFuture> supplier = () -> executorService.scheduleWithFixedDelay(this::checkNewBlocksAndUpdateState, 0, 2, TimeUnit.SECONDS);
+		supplier.get();
+	}
 
 	public void init() {
 		logger.info("Initializing nft locked map");
@@ -66,12 +63,12 @@ public class UpdateReceiver {
 		}
 	}
 
-    private void checkNewBlocksAndUpdateState() {
+	private void checkNewBlocksAndUpdateState() {
 		if (!ready) {
 			init();
 			ready = true;
 		}
-        logger.info("Receiving updates");
+		logger.info("Receiving updates");
 		try {
 			Long lastCheckedBlockId1 = (long) lastCheckedBlock.getSeqno();
 			LastBlock lastBlock = tonApi.getLastBlock();
@@ -107,10 +104,11 @@ public class UpdateReceiver {
 			}
 			logger.info("Checking block with seqno {}", blockSeqno);
 			block.block.getShards().parallelStream()
+					.filter(shard -> shard.getWorkchain() == 0)
 					.flatMap(shard -> shard.getTransactions().parallelStream()
 							.filter(transaction -> nftLockState.containsKey(transaction.getAccount()) || transaction.getAccount().equalsIgnoreCase(collectionAddr)))
 					.forEach(this::processTransaction);
-		} catch (Exception e){
+		} catch (Exception e) {
 			logger.error("Failed to check block #{}", blockSeqno, e);
 			return false;
 		}
@@ -121,13 +119,10 @@ public class UpdateReceiver {
 		if (transaction.getAccount().equalsIgnoreCase(collectionAddr)) {
 			logger.info("Found transaction on the collection");
 			TransactionDetails transactionDetails = tonApi.getTransactionDetails(transaction.getHash());
-			transactionDetails.out_msgs.stream()
-					.filter(outMsg -> outMsg.op == 0x54753766)
-					.findAny()
-					.ifPresent(outMsg -> {
-						logger.info("NFT {} was minted. Added to state as not locked", outMsg.destination);
-						nftLockState.put(outMsg.destination, false);
-					});
+			transactionDetails.out_msgs.stream().filter(outMsg -> outMsg.op == 0x54753766).findAny().ifPresent(outMsg -> {
+				logger.info("NFT {} was minted. Added to state as not locked", outMsg.destination);
+				nftLockState.put(outMsg.destination, false);
+			});
 		} else {
 			logger.info("found transaction on the nft {}", transaction.getAccount());
 			boolean lockStatus = TonClient.INSTANCE.checkLockStatus(transaction.getAccount(), null);

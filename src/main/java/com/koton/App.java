@@ -22,7 +22,6 @@ public class App  {
 			log.warn("Failed to PORT env variable, setting to 8099");
 			port = 8099;
 		}
-
 		javalin = Javalin.create()
 				.get("/getTonkeeperLink/lock", ctx -> controller.getTonKeeperLink(ctx, true))
 				.get("/getTonkeeperLink/unlock", ctx -> controller.getTonKeeperLink(ctx, false))

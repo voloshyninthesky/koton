@@ -1,6 +1,5 @@
 package com.koton.tonapi;
 
-import com.koton.TonClient;
 import com.koton.tonapi.Block.BlockState;
 import com.koton.tonapi.Block.LastBlock.LastBlock;
 import com.koton.tonapi.GetMethod.GetMethodRequest;
@@ -33,8 +32,6 @@ public class TonApi {
 	private static final String tonApiKey = "eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJhdWQiOlsidnV4ZXMiXSwiZXhwIjoxODMxODI0MjU3LCJpc3MiOiJAdG9uYXBpX2JvdCIsImp0aSI6IkVJSElVRkpZNkVMUEtHUzVQVVo0UkdFRiIsInNjb3BlIjoic2VydmVyIiwic3ViIjoidG9uYXBpIn0.o7GZcpqwxqf8firazakaTTkJzZJg2SKkpBrk9QQHL89C-U8xJDA8mAhDv6FWPyzeLxtKdSNZ79bdGmupQGapAA";
 	private static HttpClient httpClient;
 	private static JavalinJackson javalinJackson;
-
-	private static TonClient tonUtils;
 
 	public TonApi() {
 		httpClient = HttpClient.newBuilder()
