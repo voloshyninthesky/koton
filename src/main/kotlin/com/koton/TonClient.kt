@@ -1,7 +1,6 @@
 package com.koton
 
 import kotlinx.coroutines.CoroutineName
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
@@ -82,8 +81,6 @@ object TonClient {
 	fun getCollectionDataNextItemIndex(addr: String, lastBlockIdExt: TonNodeBlockIdExt?): Int{
 		val res = runGetMethod(addr, "get_collection_data", null, lastBlockIdExt)
 		val nextIndex = res.get(2) as VmStackTinyInt
-		val ownerAddr = res.get(0) as VmCellSlice
-		var ownerMsgAddress = MsgAddress.loadTlb(ownerAddr.toCellSlice())
 		return nextIndex.toInt()
 	}
 

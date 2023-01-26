@@ -19,7 +19,7 @@ ktor {
 	}
 }
 
-group = "org.example"
+group = "com.koton"
 version = "1.0-SNAPSHOT"
 
 repositories {
@@ -27,7 +27,6 @@ repositories {
 }
 
 dependencies {
-    testImplementation(kotlin("test"))
 	implementation("org.ton:ton-kotlin:0.2.4")
 	implementation("io.javalin:javalin:4.6.4")
 	implementation("org.slf4j:slf4j-simple:2.0.5")
@@ -55,7 +54,6 @@ jib {
 
 		mainClass = "com.koton.App"
 		jvmFlags = listOf(
-			"--enable-preview",
 			"-Dorg.slf4j.simpleLogger.showDateTime=true",
 			"-Dorg.slf4j.simpleLogger.dateTimeFormat=MM/dd_HH:mm:ss,SSS",
 			"-server",
